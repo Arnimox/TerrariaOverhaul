@@ -126,7 +126,6 @@ public sealed class ConfigurationState : UIState
 
 	private void InitializeCategoryPanels()
 	{
-		var thumbnailPlaceholder = ModContent.Request<Texture2D>($"{nameof(TerrariaOverhaul)}/Assets/Textures/UI/Config/NoPreview");
 		foreach (var pair in ConfigSystem.CategoriesByName.OrderBy(p => p.Key)) {
 			if (!pair.Value.EntriesByName.Values.Any(e => !e.IsHidden)) {
 				continue;
@@ -137,13 +136,17 @@ public sealed class ConfigurationState : UIState
 
 			ConfigMediaLookup.TryGetMedia(category, "Category", out var mediaResult, ConfigMediaKind.Image | ConfigMediaKind.Video);
 
-			var cardPanel = mediaResult.mediaAsset switch {
-				Asset<Video> video => new CardPanel(localizedCategoryName, video),
-				Asset<Texture2D> image => new CardPanel(localizedCategoryName, image),
-				_ => new CardPanel(localizedCategoryName, thumbnailPlaceholder),
+			var backgroundTexture = CommonAssets.GetBackgroundTexture(Math.Abs(pair.Key.GetHashCode()));
+			UIElement thumbnail = mediaResult.mediaAsset switch {
+				Asset<Video> video => new UIVideo(video),
+				Asset<Texture2D> image => new UIConfigIcon(image, backgroundTexture),
+				_ => new UIConfigIcon(CommonAssets.UnknownOptionTexture, backgroundTexture),
 			};
 
-			cardPanel.UserObject = category;
+			var cardPanel = new CardPanel(localizedCategoryName, thumbnail: thumbnail) {
+				UserObject = category
+			};
+
 			cardPanel.OnLeftClick += (_, _) => {
 				SoundEngine.PlaySound(in SoundID.MenuOpen);
 				SetCategoryScreen(category);

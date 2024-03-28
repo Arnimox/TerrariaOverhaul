@@ -18,21 +18,6 @@ namespace TerrariaOverhaul.Common.ConfigurationScreen;
 
 public class SettingsPanel : UIElement
 {
-	private const string BasePath = $"{nameof(TerrariaOverhaul)}/Assets/Textures/UI/Config";
-
-	private static Asset<Texture2D>? iconLockedTexture;
-	private static Asset<Texture2D>? unselectedIconBorderTexture;
-	private static Asset<Texture2D>[]? backgroundTextures;
-
-	private static Asset<Texture2D> UnknownOptionTexture
-		=> iconLockedTexture ??= ModContent.Request<Texture2D>($"{BasePath}/UnknownOption").EnsureLoaded();
-
-	private static Asset<Texture2D> UnselectedIconBorderTexture
-		=> unselectedIconBorderTexture ??= ModContent.Request<Texture2D>($"{BasePath}/UnselectedIconBorder").EnsureLoaded();
-
-	private static Asset<Texture2D>[] BackgroundTextures
-		=> backgroundTextures ??= Enumerable.Range(1, 7).Select(i => ModContent.Request<Texture2D>($"{BasePath}/Background{i}").EnsureLoaded()).ToArray();
-
 	private readonly List<ConfigEntryElement> entries = new();
 
 	// Rows
@@ -116,8 +101,8 @@ public class SettingsPanel : UIElement
 			e.VAlign = 0.5f;
 		}));
 
-		UnselectedIconImage = OptionIconContainer.AddElement(new UIConfigIcon(UnknownOptionTexture, BackgroundTextures[0]).With(e => {
-			e.ResolutionOverride = UnknownOptionTexture.Value.Size();
+		UnselectedIconImage = OptionIconContainer.AddElement(new UIConfigIcon(CommonAssets.UnknownOptionTexture, CommonAssets.BackgroundTextures[0]).With(e => {
+			e.ResolutionOverride = CommonAssets.UnknownOptionTexture.Size();
 			e.MaxWidth = e.Width = StyleDimension.FromPixelsAndPercent(-6f, 1.0f);
 			e.MaxHeight = e.Height = StyleDimension.FromPixelsAndPercent(-6f, 1.0f);
 
@@ -125,7 +110,7 @@ public class SettingsPanel : UIElement
 			e.VAlign = 0.5f;
 		}));
 
-		UnselectedIconBorder = OptionIconContainer.AddElement(new UIImage(UnselectedIconBorderTexture).With(e => {
+		UnselectedIconBorder = OptionIconContainer.AddElement(new UIImage(CommonAssets.UnselectedIconBorderTexture).With(e => {
 			e.HAlign = 0.5f;
 			e.VAlign = 0.5f;
 		}));
@@ -170,7 +155,7 @@ public class SettingsPanel : UIElement
 			UnselectedIconImage.ForegroundTexture = element.IconTexture;
 		}
 
-		UnselectedIconImage.BackgroundTexture = BackgroundTextures[Math.Abs(element.ConfigEntry.Name.GetHashCode()) % BackgroundTextures.Length];
+		UnselectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Math.Abs(element.ConfigEntry.Name.GetHashCode()));
 
 		Recalculate();
 	}
@@ -183,8 +168,8 @@ public class SettingsPanel : UIElement
 		DescriptionText.SetText($"[c/{Color.LightGoldenrodYellow.ToHexRGB()}:{descriptionTip}]", 1.0f, false);
 
 		// Icon
-		UnselectedIconImage.ForegroundTexture = UnknownOptionTexture;
-		UnselectedIconImage.BackgroundTexture = BackgroundTextures[Main.rand.Next(BackgroundTextures.Length)];
+		UnselectedIconImage.ForegroundTexture = CommonAssets.UnknownOptionTexture;
+		UnselectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Main.rand.Next(int.MaxValue));
 
 		Recalculate();
 	}

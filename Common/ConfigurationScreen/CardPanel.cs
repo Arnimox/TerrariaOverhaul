@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
@@ -24,19 +22,13 @@ public class CardPanel : FancyUIPanel
 
 	// Elements
 	public UIElement ThumbnailContainer { get; }
-	public UIElement Thumbnail { get; }
+	public UIElement Thumbnail { get; private set; } = null!;
 	public UIImage ThumbnailBorder { get; }
 	public UIElement TitleContainer { get; }
 	public UIElement TitleConstraint { get; }
 	public ScrollingUIText Title { get; }
 
-	public CardPanel(LocalizedText title, Asset<Texture2D> thumbnailTexture, Asset<Texture2D>? borderTexture = null)
-		: this(title, (object)thumbnailTexture, borderTexture) { }
-
-	public CardPanel(LocalizedText title, Asset<Video> thumbnailVideo, Asset<Texture2D>? borderTexture = null)
-		: this(title, (object)thumbnailVideo, borderTexture) { }
-
-	private CardPanel(LocalizedText title, object thumbnailAsset, Asset<Texture2D>? borderTexture = null) : base()
+	public CardPanel(LocalizedText title, UIElement? thumbnail = null, Asset<Texture2D>? borderTexture = null) : base()
 	{
 		TitleText = title;
 		borderTexture ??= DefaultBorderTexture;
@@ -61,28 +53,13 @@ public class CardPanel : FancyUIPanel
 			e.HAlign = 0.5f;
 		}));
 
-		if (thumbnailAsset is Asset<Texture2D> thumbnailTexture) {
-			Thumbnail = ThumbnailContainer.AddElement(new UIImage(thumbnailTexture).With(e => {
-				e.ScaleToFit = true;
-			}));
-		} else if (thumbnailAsset is Asset<Video> thumbnailVideo) {
-			Thumbnail = ThumbnailContainer.AddElement(new UIVideo(thumbnailVideo).With(e => {
-				e.ScaleToFit = true;
-			}));
-		} else {
-			throw new InvalidOperationException();
-		}
-
-		Thumbnail.With(e => {
+		ThumbnailBorder = new UIImage(borderTexture).With(e => {
+			e.ScaleToFit = true;
 			e.Width = StyleDimension.Fill;
 			e.Height = StyleDimension.Fill;
 		});
 
-		ThumbnailBorder = Thumbnail.AddElement(new UIImage(borderTexture).With(e => {
-			e.ScaleToFit = true;
-			e.Width = StyleDimension.Fill;
-			e.Height = StyleDimension.Fill;
-		}));
+		SetThumbnail(thumbnail);
 
 		// Title
 
@@ -109,5 +86,26 @@ public class CardPanel : FancyUIPanel
 			Title.SetText(title, 0.8f, false);
 			Title.NoScroll = true;
 		}
+	}
+
+	public void SetThumbnail(UIElement? thumbnail)
+	{
+		thumbnail ??= new UIElement();
+		thumbnail.Width = StyleDimension.Fill;
+		thumbnail.Height = StyleDimension.Fill;
+
+		if (thumbnail is UIImage image) {
+			image.ScaleToFit = true;
+		} else if (thumbnail is UIVideo video) {
+			video.ScaleToFit = true;
+		}
+
+		Thumbnail?.Remove();
+		ThumbnailBorder.Remove();
+
+		thumbnail.Append(ThumbnailBorder);
+		ThumbnailContainer.Append(thumbnail);
+
+		Thumbnail = thumbnail;
 	}
 }
