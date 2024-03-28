@@ -13,7 +13,9 @@ namespace TerrariaOverhaul.Common.GameFixes;
 /// </summary>
 public sealed class SystemCursorDisplay : ILoadable
 {
-	public static readonly ConfigEntry<bool> DisplaySystemCursorWithDisabledUI = new(ConfigSide.ClientOnly, "Tweaks", nameof(DisplaySystemCursorWithDisabledUI), () => true);
+	public static readonly ConfigEntry<bool> DisplaySystemCursorWithDisabledUI = new(ConfigSide.ClientOnly, "Tweaks", nameof(DisplaySystemCursorWithDisabledUI), () => true) {
+		IsHidden = true,
+	};
 	
 	void ILoadable.Load(Mod mod)
 	{

@@ -11,9 +11,7 @@ namespace TerrariaOverhaul.Core.AudioEffects;
 [Autoload(Side = ModSide.Client)]
 public sealed class LowPassFilteringSystem : ModSystem
 {
-	public static readonly ConfigEntry<bool> EnableLowPassFiltering = new(ConfigSide.ClientOnly, "Ambience", nameof(EnableLowPassFiltering), () => true) {
-		RequiresRestart = true,
-	};
+	public static readonly ConfigEntry<bool> EnableLowPassFiltering = new(ConfigSide.ClientOnly, "Ambience", nameof(EnableLowPassFiltering), () => true);
 
 	private static Action<SoundEffectInstance, float>? applyLowPassFilteringFunc;
 

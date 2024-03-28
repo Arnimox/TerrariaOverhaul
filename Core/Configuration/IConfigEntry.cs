@@ -7,6 +7,7 @@ namespace TerrariaOverhaul.Core.Configuration;
 public interface IConfigEntry
 {
 	Type ValueType { get; }
+	bool IsHidden { get; }
 	string Name { get; }
 	string Category { get; }
 	string[] ExtraCategories { get; }

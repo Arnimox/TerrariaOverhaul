@@ -126,10 +126,13 @@ public sealed class ConfigurationState : UIState
 
 	private void InitializeCategoryPanels()
 	{
-		var configCategories = ConfigSystem.CategoriesByName.Keys.OrderBy(s => s);
 		var thumbnailPlaceholder = ModContent.Request<Texture2D>($"{nameof(TerrariaOverhaul)}/Assets/Textures/UI/Config/NoPreview");
+		foreach (var pair in ConfigSystem.CategoriesByName.OrderBy(p => p.Key)) {
+			if (!pair.Value.EntriesByName.Values.Any(e => !e.IsHidden)) {
+				continue;
+			}
 
-		foreach (string category in configCategories) {
+			string category = pair.Key;
 			var localizedCategoryName = Language.GetText($"Mods.{nameof(TerrariaOverhaul)}.Configuration.{category}.DisplayName");
 
 			ConfigMediaLookup.TryGetMedia(category, "Category", out var mediaResult, ConfigMediaKind.Image | ConfigMediaKind.Video);
@@ -162,6 +165,10 @@ public sealed class ConfigurationState : UIState
 				var categoryData = ConfigSystem.CategoriesByName[category!];
 
 				foreach (var configEntry in categoryData.EntriesByName.Values) {
+					if (configEntry.IsHidden) {
+						continue;
+					}
+
 					e.AddOption(configEntry);
 				}
 			});
