@@ -47,14 +47,15 @@ public sealed class UIConfigIcon : UIElement, ILoadable
 			return;
 		}
 
-		// Configure effect.
-		effect.Parameters["Time"]?.SetValue(TimeSystem.RenderTime);
-		effect.Parameters["Resolution"]?.SetValue(ResolutionOverride ?? foreground.Size());
-		effect.Parameters["Background"]?.SetValue(background);
-		//	effect.Parameters["OutlineColor"]?.SetValue(Main.DiscoColor.ToVector4());
-
 		var dimensions = GetDimensions();
 		var rect = dimensions.ToRectangle();
+
+		// Configure effect.
+		effect.Parameters["Time"]?.SetValue(TimeSystem.RenderTime);
+		effect.Parameters["ForegroundResolution"]?.SetValue(ResolutionOverride ?? foreground.Size());
+		effect.Parameters["BackgroundResolution"]?.SetValue(new Vector2(dimensions.Width, dimensions.Height));
+		effect.Parameters["Background"]?.SetValue(background);
+		//	effect.Parameters["OutlineColor"]?.SetValue(Main.DiscoColor.ToVector4());
 		//	var matrix = Main.UIScaleMatrix;
 		//	bool matrixDiffers = matrix != lastMatrix;
 		//	
