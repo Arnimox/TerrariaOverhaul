@@ -104,7 +104,7 @@ public sealed class ConfigurationState : UIState
 			e.Height = StyleDimension.Fill;
 		}));
 
-		PanelGrid = PanelGridContainer.AddElement(new UIGrid().With(e => {
+		PanelGrid = PanelGridContainer.AddElement(new FancyUIGrid().With(e => {
 			e.Width = StyleDimension.FromPixelsAndPercent(-20, 1f);
 			e.Height = StyleDimension.Fill;
 			e.ListPadding = 15f;
