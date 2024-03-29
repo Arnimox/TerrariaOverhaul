@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 using TerrariaOverhaul.Core.Configuration;
@@ -31,8 +27,8 @@ public class SettingsPanel : UIElement
 	public UIText DescriptionText { get; }
 	// Bottom Panel - Icon
 	public UIElement OptionIconContainer { get; }
-	public UIImage UnselectedIconBorder { get; }
-	public UIConfigIcon UnselectedIconImage { get; }
+	public UIImage SelectedIconBorder { get; }
+	public UIConfigIcon SelectedIconImage { get; }
 
 	public IReadOnlyList<ConfigEntryElement> OptionElements => entries;
 
@@ -101,8 +97,7 @@ public class SettingsPanel : UIElement
 			e.VAlign = 0.5f;
 		}));
 
-		UnselectedIconImage = OptionIconContainer.AddElement(new UIConfigIcon(CommonAssets.UnknownOptionTexture, CommonAssets.BackgroundTextures[0]).With(e => {
-			e.ResolutionOverride = CommonAssets.UnknownOptionTexture.Size();
+		SelectedIconImage = OptionIconContainer.AddElement(new UIConfigIcon(CommonAssets.UnknownOptionTexture, CommonAssets.BackgroundTextures[0]).With(e => {
 			e.MaxWidth = e.Width = StyleDimension.FromPixelsAndPercent(-6f, 1.0f);
 			e.MaxHeight = e.Height = StyleDimension.FromPixelsAndPercent(-6f, 1.0f);
 
@@ -110,7 +105,7 @@ public class SettingsPanel : UIElement
 			e.VAlign = 0.5f;
 		}));
 
-		UnselectedIconBorder = OptionIconContainer.AddElement(new UIImage(CommonAssets.UnselectedIconBorderTexture).With(e => {
+		SelectedIconBorder = OptionIconContainer.AddElement(new UIImage(CommonAssets.UnselectedIconBorderTexture).With(e => {
 			e.HAlign = 0.5f;
 			e.VAlign = 0.5f;
 		}));
@@ -152,10 +147,14 @@ public class SettingsPanel : UIElement
 
 		// Icon
 		if (element.IconTexture != null) {
-			UnselectedIconImage.ForegroundTexture = element.IconTexture;
+			const float BaseResolution = 64f;
+			const float MinOutlineSize = 1f;
+
+			SelectedIconImage.ForegroundTexture = element.IconTexture;
+			SelectedIconImage.OutlineSize = Vector2.Max(Vector2.One * MinOutlineSize, element.IconTexture.Size() / (Vector2.One * BaseResolution));
 		}
 
-		UnselectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Math.Abs(element.ConfigEntry.Name.GetHashCode()));
+		SelectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Math.Abs(element.ConfigEntry.Name.GetHashCode()));
 
 		Recalculate();
 	}
@@ -168,8 +167,9 @@ public class SettingsPanel : UIElement
 		DescriptionText.SetText($"[c/{Color.LightGoldenrodYellow.ToHexRGB()}:{descriptionTip}]", 1.0f, false);
 
 		// Icon
-		UnselectedIconImage.ForegroundTexture = CommonAssets.UnknownOptionTexture;
-		UnselectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Main.rand.Next(int.MaxValue));
+		SelectedIconImage.ForegroundTexture = CommonAssets.UnknownOptionTexture;
+		SelectedIconImage.BackgroundTexture = CommonAssets.GetBackgroundTexture(Main.rand.Next(int.MaxValue));
+		SelectedIconImage.OutlineSize = Vector2.One;
 
 		Recalculate();
 	}

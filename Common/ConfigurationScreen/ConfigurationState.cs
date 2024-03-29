@@ -126,24 +126,16 @@ public sealed class ConfigurationState : UIState
 
 	private void InitializeCategoryPanels()
 	{
+		int backgroundIndex = 0;
+
 		foreach (var pair in ConfigSystem.CategoriesByName.OrderBy(p => p.Key)) {
 			if (!pair.Value.EntriesByName.Values.Any(e => !e.IsHidden)) {
 				continue;
 			}
 
 			string category = pair.Key;
-			var localizedCategoryName = Language.GetText($"Mods.{nameof(TerrariaOverhaul)}.Configuration.{category}.DisplayName");
 
-			ConfigMediaLookup.TryGetMedia(category, "Category", out var mediaResult, ConfigMediaKind.Image | ConfigMediaKind.Video);
-
-			var backgroundTexture = CommonAssets.GetBackgroundTexture(Math.Abs(pair.Key.GetHashCode()));
-			UIElement thumbnail = mediaResult.mediaAsset switch {
-				Asset<Video> video => new UIVideo(video),
-				Asset<Texture2D> image => new UIConfigIcon(image, backgroundTexture),
-				_ => new UIConfigIcon(CommonAssets.UnknownOptionTexture, backgroundTexture),
-			};
-
-			var cardPanel = new CardPanel(localizedCategoryName, thumbnail: thumbnail) {
+			var cardPanel = new CategoryCardPanel(pair.Key, CommonAssets.GetBackgroundTexture(backgroundIndex++)) {
 				UserObject = category
 			};
 
@@ -227,9 +219,9 @@ public sealed class ConfigurationState : UIState
 				|| TextMatches(entryElement.DisplayName);
 		}
 
-		if (element is CardPanel { UserObject: string categoryName } categoryPanel
-		&& ConfigSystem.CategoriesByName.TryGetValue(categoryName, out var categoryData)) {
-			if (StringMatches(categoryName)
+		if (element is CategoryCardPanel categoryPanel
+		&& ConfigSystem.CategoriesByName.TryGetValue(categoryPanel.Category, out var categoryData)) {
+			if (StringMatches(categoryPanel.Category)
 			|| TextMatches(categoryPanel.TitleText)) {
 				return true;
 			}
@@ -239,7 +231,7 @@ public sealed class ConfigurationState : UIState
 					return true;
 				}
 
-				if (TextMatches(Language.GetText($"Mods.{nameof(TerrariaOverhaul)}.Configuration.{categoryName}.{entry.Name}.DisplayName"))) {
+				if (TextMatches(Language.GetText($"Mods.{nameof(TerrariaOverhaul)}.Configuration.{categoryPanel.Category}.{entry.Name}.DisplayName"))) {
 					return true;
 				}
 			}

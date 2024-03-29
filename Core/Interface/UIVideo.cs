@@ -21,6 +21,8 @@ public class UIVideo : UIElement
 	public Color Color { get; set; } = Color.White;
 	public Vector2 NormalizedOrigin { get; set; }
 
+	public VideoPlayer? VideoPlayer => videoPlayer;
+
 	public UIVideo(Asset<Video> video)
 	{
 		SetVideo(video);
@@ -73,7 +75,6 @@ public class UIVideo : UIElement
 	public override void OnDeactivate()
 	{
 		videoPlayer?.Dispose();
-
 		videoPlayer = null;
 	}
 

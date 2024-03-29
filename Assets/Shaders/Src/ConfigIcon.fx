@@ -20,6 +20,7 @@ sampler BackgroundSampler : register(ps, s1) = sampler_state {
 };
 
 float Time;
+float2 OutlineSize;
 float2 ForegroundResolution;
 float2 BackgroundResolution;
 
@@ -31,7 +32,7 @@ float Sin01(float i)
 float4 SpritePixelShader(float4 color : COLOR0, float2 texCoord : TEXCOORD0) : SV_Target0
 {
 	float4 result = float4(0.0, 0.0, 0.0, 0.0);
-	float2 p = 1.0 / ForegroundResolution;
+	float2 p = OutlineSize / ForegroundResolution;
 	float4 background;
 	
 	{

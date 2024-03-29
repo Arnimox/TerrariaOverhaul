@@ -22,10 +22,12 @@ public sealed class UIConfigIcon : UIElement, ILoadable
 
 	public Color Color = Color.White;
 	public Vector2 NormalizedOrigin = Vector2.Zero;
-	public Vector2? ResolutionOverride;
+	public Vector2 OutlineSize = Vector2.One;
 
 	public Asset<Texture2D> ForegroundTexture { get; set; }
 	public Asset<Texture2D> BackgroundTexture { get; set; }
+	public Texture2D? ForegroundTextureOverride { get; set; }
+	public Texture2D? BackgroundTextureOverride { get; set; }
 
 	private UIConfigIcon()
 	{
@@ -41,8 +43,8 @@ public sealed class UIConfigIcon : UIElement, ILoadable
 
 	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
-		if (ForegroundTexture.Value is not Texture2D foreground
-		|| BackgroundTexture?.Value is not Texture2D background
+		if ((ForegroundTextureOverride ?? ForegroundTexture.Value) is not Texture2D foreground
+		|| (BackgroundTextureOverride ?? BackgroundTexture?.Value) is not Texture2D background
 		|| shader?.Value is not Effect effect) {
 			return;
 		}
@@ -52,8 +54,9 @@ public sealed class UIConfigIcon : UIElement, ILoadable
 
 		// Configure effect.
 		effect.Parameters["Time"]?.SetValue(TimeSystem.RenderTime);
-		effect.Parameters["ForegroundResolution"]?.SetValue(ResolutionOverride ?? foreground.Size());
-		effect.Parameters["BackgroundResolution"]?.SetValue(new Vector2(dimensions.Width, dimensions.Height));
+		effect.Parameters["OutlineSize"]?.SetValue(OutlineSize);
+		effect.Parameters["ForegroundResolution"]?.SetValue(foreground.Size());
+		effect.Parameters["BackgroundResolution"]?.SetValue(background.Size());
 		effect.Parameters["Background"]?.SetValue(background);
 		//	effect.Parameters["OutlineColor"]?.SetValue(Main.DiscoColor.ToVector4());
 		//	var matrix = Main.UIScaleMatrix;

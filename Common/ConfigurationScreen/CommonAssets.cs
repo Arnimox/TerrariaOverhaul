@@ -25,6 +25,6 @@ internal static class CommonAssets
 
 	public static Asset<Texture2D> GetBackgroundTexture(int wrappedIndex)
 	{
-		return BackgroundTextures[wrappedIndex % BackgroundTextures.Length];
+		return BackgroundTextures[MathUtils.Modulo(wrappedIndex, BackgroundTextures.Length)];
 	}
 }
