@@ -1,6 +1,8 @@
-﻿using Terraria;
+﻿using System.Reflection;
+using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 using TerrariaOverhaul.Common.ConfigurationScreen;
 using TerrariaOverhaul.Core.Localization;
 
@@ -12,6 +14,10 @@ public class ConfigurationMenuButton : MenuButton
 
 	protected override void OnClicked()
 	{
+		if (typeof(ModLoader).GetField("isLoading", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null) is true) {
+			return;
+		}
+
 		SoundEngine.PlaySound(SoundID.MenuOpen);
 		Main.MenuUI.SetState(ConfigurationState.Instance);
 		Main.menuMode = 888;
